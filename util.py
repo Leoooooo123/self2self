@@ -18,9 +18,21 @@ def add_gaussian_noise(img, model_path, sigma):
 
 def load_np_image(path, is_scale=True):
     img = cv2.imread(path, -1)
-    if img.ndim == 2:
-        img = np.expand_dims(img, axis=2)
-    img = np.expand_dims(img, axis=0)
+    b,g,r = cv2.split(img)
+    diff = g-b
+    stain = np.zeros(diff.shape,int)
+    with np.nditer([diff,stain], op_flags=['readwrite']) as it:
+        for a,b in it:
+            if a >=30:
+                b[...]=1
+    if b.ndim == 2:
+        b = np.expand_dims(b, axis=2)
+        g = np.expand_dims(g, axis=2)
+        stain = np.expand_dims(stain, axis=2)
+    b = np.expand_dims(b, axis=0)
+    g = np.expand_dims(g, axis=0)
+    stain = np.expand_dims(stain, axis=0)
     if is_scale:
-        img = np.array(img).astype(np.float32) / 255.
-    return img
+        b = np.array(b).astype(np.float32) / 255.
+        g = np.array(g).astype(np.float32) / 255.
+    return b,g,stain

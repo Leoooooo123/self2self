@@ -13,15 +13,14 @@ N_SAVE = 1000
 N_STEP = 150000
 
 
-def train(file_path, dropout_rate, sigma=25, is_realnoisy=False):
+def train(file_path, dropout_rate, is_realnoisy=False):
     print(file_path)
     tf.reset_default_graph()
-    gt = util.load_np_image(file_path)
-    _, w, h, c = np.shape(gt)
-    model_path = file_path[0:file_path.rfind(".")] + "/" + str(sigma) + "/model/Self2Self/"
+    b,g,stain = util.load_np_image(file_path)
+    _, w, h, c = np.shape(b)
+    model_path = file_path[0:file_path.rfind(".")] + "/" + "/model/Self2Self/"
     os.makedirs(model_path, exist_ok=True)
-    noisy = util.add_gaussian_noise(gt, model_path, sigma)
-    model = network.Punet.build_denoising_unet(noisy, 1 - dropout_rate, is_realnoisy)
+    model = network.Punet.build_denoising_unet(b,g,stain, dropout_rate, is_realnoisy)
 
     loss = model['training_error']
     summay = model['summary']
@@ -64,30 +63,5 @@ def train(file_path, dropout_rate, sigma=25, is_realnoisy=False):
 
 
 if __name__ == '__main__':
-    path = './testsets/Set9/'
-    file_list = os.listdir(path)
-    for sigma in [25, 50, 75, 100]:
-        for file_name in file_list:
-            if not os.path.isdir(path + file_name):
-                train(path + file_name, 0.3, sigma)
-
-    path = './testsets/BSD68/'
-    file_list = os.listdir(path)
-    sigma = 25
-    for file_name in file_list:
-        if not os.path.isdir(path + file_name):
-            train(path + file_name, 0.2, sigma)
-
-    path = './testsets/BSD68/'
-    file_list = os.listdir(path)
-    sigma = 50
-    for file_name in file_list:
-        if not os.path.isdir(path + file_name):
-            train(path + file_name, 0.3, sigma)
-
-    path = './testsets/PolyU/'
-    file_list = os.listdir(path)
-    sigma = -1
-    for file_name in file_list:
-        if not os.path.isdir(path + file_name):
-            train(path + file_name, 0.3, sigma, is_realnoisy = True)
+    path = './testsets/stain.png'
+    train(path,0.2)
