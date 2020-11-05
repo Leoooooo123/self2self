@@ -35,4 +35,5 @@ def load_np_image(path, is_scale=True):
     if is_scale:
         b = np.array(b).astype(np.float32) / 255.
         g = np.array(g).astype(np.float32) / 255.
+    print(b.shape)
     return b,g,stain
