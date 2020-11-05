@@ -22,9 +22,9 @@ def load_np_image(path, is_scale=True):
     diff = g-b
     stain = np.zeros(diff.shape,int)
     with np.nditer([diff,stain], op_flags=['readwrite']) as it:
-        for a,b in it:
-            if a >=30:
-                b[...]=1
+        for x,y in it:
+            if x >=30:
+                y[...]=1
     if b.ndim == 2:
         b = np.expand_dims(b, axis=2)
         g = np.expand_dims(g, axis=2)
