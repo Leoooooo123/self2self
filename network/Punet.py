@@ -141,20 +141,15 @@ def concat(x, y):
     return tf.transpose(tf.concat([x, y], axis=3), [0, 3, 1, 2])
 
 
-def build_denoising_unet(b,g,stain, p = 0.2, is_realnoisy=False):
-    _, h, w, c = np.shape(b)
-    b_tensor = tf.identity(b)
-    g_tensor = tf.identity(g)
-    stain_tensor = tf.identity(stain)
-    stain_tensor = tf.transpose(stain_tensor, [0, 3, 1, 2])
+def build_denoising_unet(img, p = 0.7, is_realnoisy=False):
+    _, h, w, c = np.shape(img)
+    img_tensor = tf.identity(img)
     is_flip_lr = tf.placeholder(tf.int16)
     is_flip_ud = tf.placeholder(tf.int16)
-    b_tensor = data_arg(b_tensor, is_flip_lr, is_flip_ud)
-    g_tensor = data_arg(g_tensor, is_flip_lr, is_flip_ud)
-    response = tf.transpose(b_tensor, [0, 3, 1, 2])
+    img_tensor = data_arg(img_tensor, is_flip_lr, is_flip_ud)
+    response = tf.transpose(img_tensor, [0, 3, 1, 2])
     mask_tensor = tf.ones_like(response)
-    mask_tensor = tf.nn.dropout(mask_tensor, p) * (1-p)
-    mask_tensor = tf.multiply(mask_tensor,stain_tensor)
+    mask_tensor = tf.nn.dropout(mask_tensor, p) * p
     response = tf.multiply(mask_tensor, response)
     slice_avg = tf.get_variable('slice_avg', shape=[_, h, w, c], initializer=tf.initializers.zeros())
     if is_realnoisy:
@@ -162,7 +157,7 @@ def build_denoising_unet(b,g,stain, p = 0.2, is_realnoisy=False):
     response = autoencoder(response, mask_tensor, channel=c, width=w, height=h, p=p)
     response = tf.transpose(response, [0, 2, 3, 1])
     mask_tensor = tf.transpose(mask_tensor, [0, 2, 3, 1])
-    data_loss = mask_loss(response, g_tensor, 1. - mask_tensor)
+    data_loss = mask_loss(response, img_tensor, 1. - mask_tensor)
     response = data_arg(response, is_flip_lr, is_flip_ud)
     avg_op = slice_avg.assign(slice_avg * 0.99 + response * 0.01)
     our_image = response

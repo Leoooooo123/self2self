@@ -16,11 +16,11 @@ N_STEP = 150000
 def train(file_path, dropout_rate, is_realnoisy=False):
     print(file_path)
     tf.reset_default_graph()
-    b,g,stain = util.load_np_image(file_path)
-    _, w, h, c = np.shape(b)
+    img = util.load_np_image(file_path)
+    _, w, h, c = np.shape(img)
     model_path = file_path[0:file_path.rfind(".")] + "/" + "/model/Self2Self/"
     os.makedirs(model_path, exist_ok=True)
-    model = network.Punet.build_denoising_unet(b,g,stain, dropout_rate, is_realnoisy)
+    model = network.Punet.build_denoising_unet(img, dropout_rate, is_realnoisy)
 
     loss = model['training_error']
     summay = model['summary']
@@ -64,4 +64,4 @@ def train(file_path, dropout_rate, is_realnoisy=False):
 
 if __name__ == '__main__':
     path = './testsets/stain.png'
-    train(path,0.2)
+    train(path,0.7)
