@@ -16,11 +16,11 @@ N_STEP = 150000
 def train(file_path, dropout_rate, is_realnoisy=False):
     print(file_path)
     tf.reset_default_graph()
-    img = util.load_np_image(file_path)
-    _, w, h, c = np.shape(img)
+    b,g,r,stain = util.load_np_image(file_path)
+    _, w, h, c = np.shape(b)
     model_path = file_path[0:file_path.rfind(".")] + "/" + "/model/Self2Self/"
     os.makedirs(model_path, exist_ok=True)
-    model = network.Punet.build_denoising_unet(img, dropout_rate, is_realnoisy)
+    model = network.Punet.build_denoising_unet(b,g,r,stain, dropout_rate, is_realnoisy)
 
     loss = model['training_error']
     summay = model['summary']
@@ -52,6 +52,7 @@ def train(file_path, dropout_rate, is_realnoisy=False):
                     o_avg, o_image = sess.run([slice_avg, our_image], feed_dict=feet_dict)
                     sum += o_image
                 o_image = np.squeeze(np.uint8(np.clip(sum / N_PREDICTION, 0, 1) * 255))
+
                 o_avg = np.squeeze(np.uint8(np.clip(o_avg, 0, 1) * 255))
                 if is_realnoisy:
                     cv2.imwrite(model_path + 'Self2Self-' + str(step + 1) + '.png', o_avg)
