@@ -10,7 +10,7 @@ TF_DATA_TYPE = tf.float32
 LEARNING_RATE = 1e-4
 N_PREDICTION = 100
 N_SAVE = 1000
-N_STEP = 150000
+N_STEP = 50000
 
 
 def train(file_path, dropout_rate, is_realnoisy=False):
