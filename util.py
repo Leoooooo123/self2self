@@ -6,11 +6,11 @@ def load_np_image(path, is_scale=True):
     img = cv2.imread(path, -1)
     b,g,r = cv2.split(img)
     diff = g-b
-    stain = np.zeros(diff.shape,int)
+    stain = np.ones(diff.shape,int)
     with np.nditer([diff,stain], op_flags=['readwrite']) as it:
         for x,y in it:
             if x >=30 and x<=50:
-                y[...]=1
+                y[...]=0
     if b.ndim == 2:
         b = np.expand_dims(b, axis=2)
         g = np.expand_dims(g, axis=2)

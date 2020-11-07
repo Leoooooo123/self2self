@@ -144,7 +144,6 @@ def concat(x, y):
 def build_denoising_unet(b,g,r,stain, p = 0.7, is_realnoisy=False):
     is_flip_lr = tf.placeholder(tf.int16)
     is_flip_ud = tf.placeholder(tf.int16)
-    _, h, w, c = np.shape(b)
     
     b_tensor = tf.identity(b)
     g_tensor = tf.identity(g)
@@ -164,7 +163,10 @@ def build_denoising_unet(b,g,r,stain, p = 0.7, is_realnoisy=False):
 
     img_tensor = tf.concat([b_tensor,g_tensor,r_tensor],-1)
     mask_tensor = tf.concat([b_mask_tensor,g_mask_tensor,r_mask_tensor],-1)
-
+    
+    
+    _,h,w,c = np.shape(b)
+    c=3
     img_tensor = data_arg(img_tensor, is_flip_lr, is_flip_ud)
     
     response = tf.transpose(img_tensor, [0, 3, 1, 2])
