@@ -10,7 +10,7 @@ TF_DATA_TYPE = tf.float32
 LEARNING_RATE = 1e-4
 N_PREDICTION = 100
 N_SAVE = 1000
-N_STEP = 150000
+N_STEP = 50000
 
 
 def train(file_path, dropout_rate, is_realnoisy=False):
@@ -64,4 +64,4 @@ def train(file_path, dropout_rate, is_realnoisy=False):
 
 if __name__ == '__main__':
     path = './testsets/stain.png'
-    train(path,0.2)
+    train(path,0.7)
